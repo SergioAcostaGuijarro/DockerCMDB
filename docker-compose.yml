@@ -1,0 +1,36 @@
+version: "3.9"
+volumes:
+  tomcat:
+  cmdbuild-postgresql:
+
+services:
+  cmdbuild-postgresql:
+    image: cmdbuild-postgresql
+    container_name: cmdbuild-postgresql
+    build:
+      context: ./postgresql
+      dockerfile: Dockerfile
+    volumes:
+      - cmdbuild-postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    restart: always
+
+  cmdbuild-tomcat:
+    image: cmdbuild-tomcat
+    container_name: cmdbuild-tomcat
+    build:
+      context: ./tomcmdb
+      dockerfile: Dockerfile
+    links:
+      - cmdbuild-postgresql
+    depends_on:
+      - cmdbuild-postgresql
+    ports:
+      - "8080:8080"
+    restart: always
+    volumes:
+      - tomcat:/usr/local/tomcat
